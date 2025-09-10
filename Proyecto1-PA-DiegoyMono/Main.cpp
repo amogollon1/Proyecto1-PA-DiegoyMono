@@ -10,22 +10,36 @@
 
 using namespace std;
 
+int leerEnteroValido(const string& mensaje, int min, int max) { // metodo para validar las entradas de enteros
+    int valor;
+    while (true) {
+        cout << mensaje;
+        cin >> valor;
+        if (cin.fail() || valor < min || valor > max) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Error: Ingrese un numero entre " << min << " y " << max << endl;
+        }
+        else {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+    }
+    return valor;
+}
+
 int main() {
     srand(static_cast<unsigned int>(time(0)));
     // inicializar aleatoriedad con una semilla distinta cada vez que se ejecute el programa, static cast unsigned int es una manera de convertir el formato horario a un entero unsigned (sin negativos) ya que no siempre sería el caso tratando con la hora
    // ¿Que pasa si no está esta linea? -> el programa utilizaria la semilla default de srand que es 1, por lo que se incializaria cada vez con los mismos valores
     Zoologico zoo;
 
-    int numHabitats, numAnimales, numDias;
-
     cout << "---------CONFIGURACION INICIAL---------" << endl;
     
-    cout << "Ingrese la cantidad de habitats: ";
-    cin >> numHabitats;
+    int numHabitats = leerEnteroValido("Ingrese la cantidad de habitats (1-10): ", 1, 10);
+    int numAnimales = leerEnteroValido("Ingrese la cantidad de animales (1-100): ", 1, 100);
+    int numDias = leerEnteroValido("Ingrese la cantidad de dias a simular (1-365): ", 1, 365);
     zoo.configurarHabitats(numHabitats);
-
-    cout << "Ingrese la cantidad de animales: ";
-    cin >> numAnimales;
 
     for (int i = 0; i < numHabitats; i++) { // se asigna al menos un animal compatible a cada habitat
         Animal* nuevoAnimal = nullptr;
