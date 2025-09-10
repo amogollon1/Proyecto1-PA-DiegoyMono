@@ -17,27 +17,6 @@ Animal::Animal(int id, string tipo, int comida, double probNac, double probEnf, 
     estadoSalud = EstadoSalud::Saludable; //Saludable por default
 }
 
-//void Animal::Alimentar(int comida) {
-//    if (!estaVivo()) { //estaVivo es vivo por defualt por lo que su negacion es que esta muerto
-//        cout << "No se puede alimentar un animal muerto." << endl;
-//        return;
-//    }
-//
-//    if (comida < unidades_comida) { //Si la comida administrada es menor a sus unidades de comida requeridas
-//        if (estadoNutricion == EstadoNutricion::Desnutrido) {
-//            estadoSalud = EstadoSalud::Fallecido;
-//            cout << "El animal con el ID " << IDAnimal << " murio por desnutrición." << endl;
-//        }
-//        else {
-//            estadoNutricion = EstadoNutricion::Desnutrido;
-//            cout << "El animal con el ID " << IDAnimal << " esta desnutrido." << endl;
-//        }
-//    }
-//    else {
-//        estadoNutricion = EstadoNutricion::Nutrido;
-//        cout << "El animal con el ID " << IDAnimal << " fue alimentado correctamente." << endl;
-//    }
-//}
 void Animal::Alimentar(int comida) {
     if (!estaVivo()) { //estaVivo es vivo por defualt por lo que su negacion es que esta muerto
         cout << "No se puede alimentar un animal muerto (ID: " << IDAnimal << ")." << endl;
@@ -48,11 +27,11 @@ void Animal::Alimentar(int comida) {
         << " unidades (requiere: " << unidades_comida << ")" << endl;
 
     if (comida < unidades_comida) { //Si la comida administrada es menor a sus unidades de comida requeridas
-        if (estadoNutricion == EstadoNutricion::Desnutrido) {
+        if (estadoNutricion == EstadoNutricion::Desnutrido) { // si el estado de nutricion es desnutrido y no recibe la comida necesaria fallece
             estadoSalud = EstadoSalud::Fallecido;
             cout << "El animal con el ID " << IDAnimal << " murio por desnutricion." << endl;
         }
-        else {
+        else { // si el estado de nutricion es nutrido y no recibe la comida necesaria pasa a estar desutrido
             estadoNutricion = EstadoNutricion::Desnutrido;
             cout << "El animal con el ID " << IDAnimal << " esta desnutrido." << endl;
         }
@@ -63,31 +42,18 @@ void Animal::Alimentar(int comida) {
     }
 }
 
-/*void Animal::Enfermar() {
-    if (!estaVivo()) return; //Sino esta vivo el metodo no hace nada
+void Animal::Enfermar() { 
+    if (!estaVivo()) return; // si el animal no esta vivo no puede enfermarse
 
-    int prob = rand() % 10 + 1; //rand funciona con rangos pseudoaleatorios 0, 453, 12983, 32767, modulo 10 devuelve el residuo de la division entre 10 y le suma uno para que el rango de numeros aleatorios este en 1,2,3,4...
-    if (prob <= probabilidad_enfermedad) { //Compara el numero random con la probabilidad verdadera de que se enferme
-        estadoSalud = (rand() % 2 == 0) ? EstadoSalud::EnfermoLeve : EstadoSalud::EnfermoGrave; //Similarmente, devolvera un residuo de 0 o 1, y el operador ternario asigna respectivamente, operador ternario en lugar de if para ahorrar lineas
-        cout << "El animal con el ID " << IDAnimal <<" se enfermo (" << (estadoSalud == EstadoSalud::EnfermoLeve ? "leve" : "grave") << ")." << endl; //Como se manejan solo dos estados, sino es estado leve se aginara respectivamente a la salida correspondiente
-    }
-}*/
-
-
-
-
-void Animal::Enfermar() { //NUEVO DEEPSEEK
-    if (!estaVivo()) return;
-
-    int prob = rand() % 20 + 1;
-    if (prob <= probabilidad_enfermedad) {
-        estadoSalud = (rand() % 2 == 0) ? EstadoSalud::EnfermoLeve : EstadoSalud::EnfermoGrave;
+    int prob = rand() % 20 + 1; // se genera aleatoreamente la probabilidad que se comparara
+    if (prob <= probabilidad_enfermedad) { // dependiendo de la probabilidad de cada animal se valida si se enferma o no
+        estadoSalud = (rand() % 2 == 0) ? EstadoSalud::EnfermoLeve : EstadoSalud::EnfermoGrave; // en caso de enfermarse, aleatoriamente se decide si es leve o grave
         // Configurar resistencia según gravedad
-        if (estadoSalud == EstadoSalud::EnfermoLeve) {
+        if (estadoSalud == EstadoSalud::EnfermoLeve) { // si es leve reciste 3 dias enfermo
             maxDiasResistencia = 3;
         }
         else {
-            maxDiasResistencia = 1;
+            maxDiasResistencia = 1; // si es grave resiste solo un dia enfermo
         }
 
         diasEnfermo = 0;
@@ -95,28 +61,25 @@ void Animal::Enfermar() { //NUEVO DEEPSEEK
             << (estadoSalud == EstadoSalud::EnfermoLeve ? "leve" : "grave") << ")." << endl;
     }
 }
-void Animal::avanzarDia() { //NUEVO DEEPSEEK
+void Animal::avanzarDia() { 
     if (!estaVivo()) return;
 
-    // Lógica de muerte por enfermedad
-    if (estadoSalud == EstadoSalud::EnfermoLeve || estadoSalud == EstadoSalud::EnfermoGrave) {
+    if (estadoSalud == EstadoSalud::EnfermoLeve || estadoSalud == EstadoSalud::EnfermoGrave) { 
         diasEnfermo++;
-        if (diasEnfermo > maxDiasResistencia) {
-            estadoSalud = EstadoSalud::Fallecido;
+        if (diasEnfermo > maxDiasResistencia) { // si el animal esta enfermo se conparan los dias que lleva en ese estado con la cantidad de dias que puede resistir
+            estadoSalud = EstadoSalud::Fallecido; // en caso de superar el limite el animal fallece
             cout << "El animal con ID " << IDAnimal << " murio por enfermedad." << endl;
         }
     }
-
-    // Lógica de muerte por desnutrición (ya existe en Alimentar)
 } 
-bool Animal::puedeReproducirse() const { //NUEVO DEEPSEEK
+bool Animal::puedeReproducirse() const { // se valida que se cumplan todas las condiciones para que el animal pueda reproducirse
     return estaVivo() && estadoNutricion == EstadoNutricion::Nutrido &&
         estadoSalud == EstadoSalud::Saludable;
 }
 Animal* Animal::reproducir(int nuevoID) {
     if (!puedeReproducirse()) return nullptr;
 
-    int prob = rand() % 50 + 1;
+    int prob = rand() % 50 + 1; // se obtine un valor aleatorio que se comparara con la posibilidad de nacimiento de cada animal
     if (prob <= probabilidad_nacimiento) {
         double precioCria = 50 + rand() % 451; // Precio entre 50-500 para crías
 
@@ -126,11 +89,8 @@ Animal* Animal::reproducir(int nuevoID) {
         if (tipoAnimal == "Pez") return new Pez(nuevoID, precioCria);
         if (tipoAnimal == "Anfibio") return new Anfibio(nuevoID, precioCria);
     }
-    return nullptr;
+    return nullptr; // en caso de no poder reproducirse se devuelve un valor nulo de memoria
 }
-
-
-
 
 void Animal::TratarSuero() {
     if (estadoNutricion == EstadoNutricion::Desnutrido) {
@@ -147,6 +107,6 @@ void Animal::TratarMedicina() {
 }
 
 void Animal::Vacunar() {
-    if (probabilidad_enfermedad > 1) probabilidad_enfermedad--;
+    if (probabilidad_enfermedad > 1) probabilidad_enfermedad--; // la vacuna disminuye la probabilidad de enfermarse
     cout << "El animal con el ID " << IDAnimal << " fue vacunado. Ahora tiene menor probabilidad de enfermar." << endl;
 }

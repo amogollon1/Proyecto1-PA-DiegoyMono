@@ -27,34 +27,14 @@ int main() {
     cout << "Ingrese la cantidad de animales: ";
     cin >> numAnimales;
 
-    //// Crear animales y asignar a habitats
-    //for (int i = 0; i < numAnimales; i++) {
-    //    int tipo = rand() % 5; // Aleatorio entre 0 y 4
-    //    double precio = 100 + rand() % 901; // 100–1000
-    //    Animal* nuevoAnimal = nullptr;
-
-    //    switch (tipo) {
-    //    case 0: nuevoAnimal = new Ave(i + 1, precio); cout << "\nAve: " << nuevoAnimal->MostrarDescripcion() << endl; break; //asigna los ids por i + 1 para empezar en 1
-    //    case 1: nuevoAnimal = new Mamifero(i + 1, precio);   cout << "\nMamifero: " << nuevoAnimal->MostrarDescripcion() << endl; break;
-    //    case 2: nuevoAnimal = new Reptil(i + 1, precio);  cout << "\nReptil: " << nuevoAnimal->MostrarDescripcion() << endl; break;
-    //    case 3: nuevoAnimal = new Pez(i + 1, precio);  cout << "\nPez: " << nuevoAnimal->MostrarDescripcion() << endl;break;
-    //    case 4: nuevoAnimal = new Anfibio(i + 1, precio);  cout << "\nAnfibio: " << nuevoAnimal->MostrarDescripcion() << endl;break;
-    //    }
-
-    //    int habitatAsignado = 1 + rand() % numHabitats; //hace un rango de numero aleatorios de numHabitats, por ejemplo numHabitats = 4, rango de numeros aleatorios = 0,1,2,3
-    //    //+1 porque no tratamos con 0 habitats asignados
-    //    zoo.asignarAnimal(nuevoAnimal, habitatAsignado);
-    //}
-
-    // Primero: asignar al menos un animal compatible a cada hábitat
-    for (int i = 0; i < numHabitats; i++) {
+    for (int i = 0; i < numHabitats; i++) { // se asigna al menos un animal compatible a cada habitat
         Animal* nuevoAnimal = nullptr;
         double precio = 100 + rand() % 901;
 
         string tipoHabitat = zoo.getTipoHabitat(i + 1);
-        int nuevoID = Zoologico::generarIDUnico(); // Usar ID único
+        int nuevoID = Zoologico::generarIDUnico(); // se usa el id unico generado
 
-        if (tipoHabitat == "Aviario") {
+        if (tipoHabitat == "Aviario") { 
             nuevoAnimal = new Ave(nuevoID, precio);
         }
         else if (tipoHabitat == "Acuario") {
@@ -77,12 +57,11 @@ int main() {
             << nuevoAnimal->MostrarDescripcion() << endl;
     }
 
-    // Segundo: asignar los animales restantes aleatoriamente
-    for (int i = numHabitats; i < numAnimales; i++) {
+    for (int i = numHabitats; i < numAnimales; i++) { // se asignan los animales restantes aleatoriamente
         int tipo = rand() % 5;
         double precio = 100 + rand() % 901;
         Animal* nuevoAnimal = nullptr;
-        int nuevoID = Zoologico::generarIDUnico(); // Usar ID único
+        int nuevoID = Zoologico::generarIDUnico(); // se crea un id unico
 
         switch (tipo) {
         case 0: nuevoAnimal = new Ave(nuevoID, precio); break;
@@ -103,8 +82,7 @@ int main() {
     cout << "Ingrese la cantidad de dias a simular: ";
     cin >> numDias;
 
-    // Bucle de simulación
-    for (int dia = 1; dia <= numDias; dia++) {
+    for (int dia = 1; dia <= numDias; dia++) { // bucle de simulación
         cout << "\n------ DIA " << dia << " -----" << endl;
 
         int opcion;
@@ -146,12 +124,11 @@ int main() {
             }
         } while (opcion != 4 && opcion != 0); // avanzar o salir
 
-        if (opcion == 0) break; // usuario decidió salir
+        if (opcion == 0) break; // usuario decidio salir
     }
 
-    cout << "\n===== SIMULACION FINALIZADA =====" << endl; //NUEVO DEEPSEEK
-    zoo.mostrarReporteFinal(); // Cambiar por el nuevo método
+    cout << "\n===== SIMULACION FINALIZADA =====" << endl;
+    zoo.mostrarReporteFinal();
 
     return 0;
 }
-

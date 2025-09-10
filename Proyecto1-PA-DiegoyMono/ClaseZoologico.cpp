@@ -17,11 +17,11 @@ void Zoologico::configurarHabitats(int num) {
 }
 
 void Zoologico::asignarAnimal(Animal* animal, int habitatID) {
-    for (auto& h : habitats) {
-        if (h.IDHabitat == habitatID) {
+    for (auto& h : habitats) { //foreach habitat en el vector habitats se usa auto& para hacer los cambios por referencia
+        if (h.IDHabitat == habitatID) { 
             bool asignado = false;
 
-            // Verificación de compatibilidad
+            // Verificación de compatibilidad (valida que el habitat solo reciba ciertos animales en específico)
             if (h.tipoHabitat == "Aviario" && animal->getTipo() == "Ave") {
                 h.animalesAsignados.push_back(animal);
                 asignado = true;
@@ -44,113 +44,72 @@ void Zoologico::asignarAnimal(Animal* animal, int habitatID) {
                 asignado = true;
             }
 
-            // Si el animal NO era válido, generar uno nuevo adecuado para este hábitat
+            // Si el animal NO era válido, genera uno nuevo adecuado para este habitat
             if (!asignado) {
-                delete animal; // liberamos memoria del animal inválido
+                delete animal; // liberamos memoria del animal invalido
                 Animal* nuevo = nullptr;
-                double precio = 100 + rand() % 901; // precio aleatorio entre 100–1000
-                int nuevoID = generarIDUnico();
+                double precio = 100 + rand() % 901; // se genera un nuevo precio aleatorio entre 100–1000
+                int nuevoID = generarIDUnico(); // se genera un nuevo id
                 if (h.tipoHabitat == "Aviario") {
                     nuevo = new Ave(nuevoID++, precio);
                 }
                 else if (h.tipoHabitat == "Acuario") {
-                    nuevo = new Pez(nuevoID++, precio);  // Usamos siguienteID global
+                    nuevo = new Pez(nuevoID++, precio);
                 }
                 else if (h.tipoHabitat == "Laguna") {
-                    int tipo = rand() % 3; // aleatorio entre 0 y 2
+                    int tipo = rand() % 3; // si el habitat recibe mas de un tipo de animal, este se elige aleatoriamente
                     if (tipo == 0) nuevo = new Anfibio(nuevoID++, precio);
                     else if (tipo == 1) nuevo = new Reptil(nuevoID++, precio);
                     else nuevo = new Pez(nuevoID++, precio);
                 }
                 else if (h.tipoHabitat == "Bosque") {
-                    if (rand() % 2 == 0) nuevo = new Mamifero(nuevoID++, precio);
+                    if (rand() % 2 == 0) nuevo = new Mamifero(nuevoID++, precio); // si el habitat recibe mas de un tipo de animal, este se elige aleatoriamente
                     else nuevo = new Reptil(nuevoID++, precio);
                 }
 
-                cout << "Se genero un nuevo animal válido para el habitat: "
-                    << h.tipoHabitat << endl;
-
+                cout << "Se genero un nuevo animal válido para el habitat: " << h.tipoHabitat << endl;
                 h.animalesAsignados.push_back(nuevo);
             }
-
             return;
         }
     }
 }
-//void Zoologico::alimentarAnimales() {
-//    int opcionAlimentacion;
-//    cout << "\nOpciones de alimentacion:" << endl;
-//    cout << "1. Alimentar todos completamente" << endl;
-//    cout << "2. Alimentar con cantidad minima" << endl;
-//    cout << "3. No alimentar" << endl;
-//    cout << "Seleccione opcion: ";
-//    cin >> opcionAlimentacion;
-//
-//    double gastoDia = 0;
-//
-//    for (auto& h : habitats) {
-//        for (auto a : h.animalesAsignados) {
-//            if (a->estaVivo()) {
-//                int comidaADar = 0;
-//
-//                switch (opcionAlimentacion) {
-//                case 1: // Alimentar completamente
-//                    comidaADar = a->getUnidadesComida();
-//                    break;
-//                case 2: // Alimentar con cantidad minima (50%)
-//                    comidaADar = a->getUnidadesComida() / 2;
-//                    break;
-//                case 3: // No alimentar
-//                    comidaADar = 0;
-//                    break;
-//                default:
-//                    comidaADar = a->getUnidadesComida();
-//                }
-//
-//                a->Alimentar(comidaADar);
-//                gastoDia += 50 * comidaADar;
-//            }
-//        }
-//    }
-//
-//    gastosTotales += gastoDia;
-//    cout << "Gasto en comida este dia: " << gastoDia << endl;
-//}
-void Zoologico::alimentarAnimales() {
+
+void Zoologico::alimentarAnimales() { 
+    int opcion;
+    double gastoDia = 0;
+    int animalesAlimentados = 0;
+    int animalesDesnutridos = 0;
+
     cout << "\n=== SISTEMA DE ALIMENTACION ===" << endl;
     cout << "1. Alimentacion completa (costoso)" << endl;
     cout << "2. Alimentacion minima (economico)" << endl;
     cout << "3. No alimentar (riesgoso)" << endl;
     cout << "Seleccione opcion: ";
-
-    int opcion;
+    
     cin >> opcion;
 
-    double gastoDia = 0;
-    int animalesAlimentados = 0;
-    int animalesDesnutridos = 0;
-
     for (auto& h : habitats) {
-        for (auto a : h.animalesAsignados) {
-            if (a->estaVivo()) {
+        for (auto a : h.animalesAsignados) { //foreach habitat en el vector habitats
+            if (a->estaVivo()) { //si el animal esta vivo se le da por default 0 de comida para que esté hambriento
                 int comidaADar = 0;
 
                 switch (opcion) {
-                case 1: // Completa
+                case 1: // en este caso se le da de comer todas las unidades de comida que necesita cada animal
                     comidaADar = a->getUnidadesComida();
                     break;
-                case 2: // Minima (50%)
+                case 2: // en este caso se le da de comer la mitad de las unidades que necesita cada animal
                     comidaADar = a->getUnidadesComida() / 2;
                     break;
-                case 3: // No alimentar
+                case 3: // se da la opcion de no alimentar los animales con el riesgo de que mueran
                     comidaADar = 0;
                     break;
                 }
-                a->Alimentar(comidaADar);
-                gastoDia += 50 * comidaADar;
+                a->Alimentar(comidaADar); // se alimeta segun la opcion seleccionada
+                gastoDia += 50 * comidaADar; // cada unidad de comida se multiplica por 50 (el costo de cada unidad)
                 animalesAlimentados++;
 
-                if (comidaADar < a->getUnidadesComida()) {
+                if (comidaADar < a->getUnidadesComida()) { // si la cantidad de comida dada al animal es menor a la que necesita este entra en estado de desnutricion
                     animalesDesnutridos++;
                 }
             }
@@ -165,18 +124,9 @@ void Zoologico::alimentarAnimales() {
 }
 
 
-//void Zoologico::alimentarAnimales() {
-//    for (auto& h : habitats) {
-//        for (auto a : h.animalesAsignados) { //Dentro de cada habitat recorre cada animal a
-//            a->Alimentar(a->getUnidadesComida()); //LLama al metodo alimentar a-> porque son punteros 
-//            gastosTotales += 50 * a->getUnidadesComida(); // cada unidad cuesta 50
-//        }
-//    }
-//}
-
 void Zoologico::aplicarTratamiento(int idAnimal, int opcion) {
-    for (auto& h : habitats) {
-        for (auto a : h.animalesAsignados) {
+    for (auto& h : habitats) { //foreach habitat en el vector habitats se usa auto& para hacer los cambios por referencia
+        for (auto a : h.animalesAsignados) { //foreach habitat en el vector habitats
             if (a->getID() == idAnimal) { //Valida la existencia de ese id del animal
                 switch (opcion) {
                 case 1: a->TratarSuero(); gastosTotales += 100; break;
@@ -189,32 +139,17 @@ void Zoologico::aplicarTratamiento(int idAnimal, int opcion) {
     }
 }
 
-//void Zoologico::avanzarDia() {
-//    double ingresoDia = 0;
-//    for (auto& h : habitats) {
-//        for (auto a : h.animalesAsignados) {
-//            if (a->estaVivo()) {
-//                a->Enfermar(); //enfermar segun las probabilidades
-//                ingresoDia += 0.5 * a->getPrecio(); //al finalizar el dia, en este caso el bloque de codigo, le suma la mitad del precio original del animal como ganancia
-//            }
-//        }
-//    }
-//    ingresosTotales += ingresoDia; //a ingresos totales se le añadira el ingreso del dia constantemente
-//    cout << "Ingreso del dia: " << ingresoDia << endl;
-//}
-void Zoologico::avanzarDia() {
+void Zoologico::avanzarDia() { 
     double ingresoDia = 0;
     int animalesMuertosHoy = 0;
     int animalesDesnutridosHoy = 0;
 
     cout << "\n=== AVANZANDO DIA ===" << endl;
 
-    // 1. Primero procesar la falta de alimentación
-    for (auto& h : habitats) {
+    for (auto& h : habitats) { //foreach habitat en el vector habitats se usa auto& para hacer los cambios por referencia
         for (auto a : h.animalesAsignados) {
             if (a->estaVivo()) {
-                // Simular que NO fueron alimentados hoy (esto causa desnutrición)
-                // Pasamos 0 unidades de comida para forzar la desnutrición
+                // Simular que NO fueron alimentados hoy esto causa la desnutrición
                 a->Alimentar(0);
 
                 // Contar estados
@@ -228,54 +163,50 @@ void Zoologico::avanzarDia() {
         }
     }
 
-    // 2. Luego procesar reproducción y enfermedad
     procesarReproduccion();
 
-    for (auto& h : habitats) {
+    for (auto& h : habitats) { //foreach habitat en el vector habitats se usa auto& para hacer los cambios por referencia
         for (auto a : h.animalesAsignados) {
-            if (a->estaVivo()) {
+            if (a->estaVivo()) { // se valida que el animal este con vida
                 a->Enfermar();
                 a->avanzarDia();
-                ingresoDia += 0.5 * a->getPrecio();
+                ingresoDia += 0.5 * a->getPrecio(); // el ingreso diario se obtiene sumando el 50% del precio de cada animal
 
-                // Verificar si murió después de avanzar el día
-                if (!a->estaVivo()) {
+                if (!a->estaVivo()) { // Verificar si murió después de avanzar el día
                     animalesMuertosHoy++;
                 }
             }
         }
     }
 
-    ingresosTotales += ingresoDia;
+    ingresosTotales += ingresoDia; // se acumulan los ingresos del dia en los totales
 
     cout << "\n--- RESUMEN DEL DIA ---" << endl;
     cout << "Animales desnutridos: " << animalesDesnutridosHoy << endl;
     cout << "Animales muertos hoy: " << animalesMuertosHoy << endl;
     cout << "Ingreso del dia: " << ingresoDia << endl;
 }
-void Zoologico::procesarReproduccion() { //NUEVO DEEPSEEK
+void Zoologico::procesarReproduccion() { 
     vector<Animal*> nuevasCrias;
 
-    for (auto& h : habitats) {
+    for (auto& h : habitats) { //foreach habitat en el vector habitats se usa auto& para hacer los cambios por referencia
         for (auto a : h.animalesAsignados) {
-            if (a->puedeReproducirse()) {
-                Animal* cria = a->reproducir(generarIDUnico());
-                if (cria != nullptr) {
+            if (a->puedeReproducirse()) { // se llama al metodo que valida si el animal puede reproducirse o no
+                Animal* cria = a->reproducir(generarIDUnico()); // en caso de hacerlo se crea una instancia nueva de Animal, en conjunto con un su ID
+                if (cria != nullptr) { // si el espacio de memoria de la cria no esta vacia significa que nacio una nueva y se pushea al vector nuevasCrias
                     nuevasCrias.push_back(cria);
-                    cout << "Nueva cría de " << a->getTipo() << " nacida en hábitat "
-                        << h.IDHabitat << " con ID " << cria->getID() << endl;
+                    cout << "Nueva cria de " << a->getTipo() << " nacida en habitat " << h.IDHabitat << " con ID " << cria->getID() << endl;
                 }
             }
         }
     }
 
-    // Asignar crías a habitats aleatorios
-    for (auto cria : nuevasCrias) {
-        int habitatID = 1 + rand() % habitats.size();
-        asignarAnimal(cria, habitatID);
+    for (auto cria : nuevasCrias) { // Asignar crias a habitats aleatorios
+        int habitatID = 1 + rand() % habitats.size(); // se elige aleatoriamente a que habitat se ingresara la cria
+        asignarAnimal(cria, habitatID); // se valida que la cria sea del tipo que acepta el habitat
     }
 }
-void Zoologico::mostrarReporteFinal() const { //NUEVO DEEPSEEK
+void Zoologico::mostrarReporteFinal() const { // este metodo recoge varios datos totales para presentarlo al final de la simulacion
     double totalVivos = 0;
     double totalFallecidos = 0;
     int countVivos = 0;
@@ -283,25 +214,21 @@ void Zoologico::mostrarReporteFinal() const { //NUEVO DEEPSEEK
 
     cout << "\n===== REPORTE FINAL =====" << endl;
 
-    for (auto& h : habitats) {
+    for (auto& h : habitats) { //foreach habitat en el vector habitats se usa auto& para hacer los cambios por referencia
         cout << "\nHabitat " << h.IDHabitat << " (" << h.tipoHabitat << "):" << endl;
 
-        for (auto a : h.animalesAsignados) {
+        for (auto a : h.animalesAsignados) { 
             string estado = a->estaVivo() ? "Vivo" : "Muerto";
-            if (a->estaVivo()) {
+            if (a->estaVivo()) { // si el animal esta vivo se incrementa la cantidad de animales vivos
                 totalVivos += a->getPrecio();
                 countVivos++;
             }
             else {
-                totalFallecidos += a->getPrecio();
+                totalFallecidos += a->getPrecio(); // caso contrario se incrementan los fallecidos
                 countFallecidos++;
             }
 
-            cout << " - ID: " << a->getID()
-                << " Tipo: " << a->getTipo()
-                << " Precio: " << a->getPrecio()
-                << " Estado: " << estado
-                << endl;
+            cout << " - ID: " << a->getID() << " Tipo: " << a->getTipo() << " Precio: " << a->getPrecio() << " Estado: " << estado << endl;
         }
     }
 
@@ -312,24 +239,22 @@ void Zoologico::mostrarReporteFinal() const { //NUEVO DEEPSEEK
     cout << "Total de ingresos generados: " << ingresosTotales << endl;
     cout << "Balance neto: " << (ingresosTotales - gastosTotales) << endl;
 }
-string Zoologico::getTipoHabitat(int habitatID) const {
-    for (const auto& h : habitats) {
+string Zoologico::getTipoHabitat(int habitatID) const { // devuelve el tipo de habitat, basado en el ID que tiene asignado
+    for (const auto& h : habitats) { 
         if (h.IDHabitat == habitatID) {
             return h.tipoHabitat;
         }
     }
-    return ""; // Retorna string vacío si no encuentra el hábitat
+    return ""; // Retorna string vacio si no encuentra el habitat
 }
 
 
-void Zoologico::mostrarReporteAnimales() const {
-    for (auto& h : habitats) {
-        //Para cada habitat su informacion
-        cout << "\nHabitat " << h.IDHabitat << " (" << h.tipoHabitat << "):" << endl;
-        //para cada animal su informacion
-        for (auto a : h.animalesAsignados) {
+void Zoologico::mostrarReporteAnimales() const { // se muestra la informacion individual de cada animal
+    for (auto& h : habitats) {  // se muestra para cada habitat su informacion
+        cout << "\nHabitat " << h.IDHabitat << " (" << h.tipoHabitat << "):" << endl; 
+        for (auto a : h.animalesAsignados) {  // se muestra para cada animal su informacion
             string estadoSalud;
-            switch (a->getSalud()) {
+            switch (a->getSalud()) { // como el estado de salud esta guardado en un enum, primero se obtiene el valor y se almacena en un string para poder imprimirlo
             case EstadoSalud::Saludable: estadoSalud = "Saludable"; break;
             case EstadoSalud::EnfermoLeve: estadoSalud = "Enfermo Leve"; break;
             case EstadoSalud::EnfermoGrave: estadoSalud = "Enfermo Grave"; break;
@@ -346,7 +271,6 @@ void Zoologico::mostrarReporteAnimales() const {
                 << endl;
         }
     }
-    cout << "\nIngresos totales: " << ingresosTotales << endl;
+    cout << "\nIngresos totales: " << ingresosTotales << endl; 
     cout << "Gastos totales: " << gastosTotales << endl;
 }
-
